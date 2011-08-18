@@ -17,6 +17,7 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -24,8 +25,6 @@ import org.w3c.dom.NodeList;
 import stocks.collector.XmlDataCollector;
 import stocks.data.Data;
 import stocks.data.StooqCurrentData;
-
-import com.sun.org.apache.xpath.internal.XPathAPI;
 
 /**
  * Get actual data for an asset from stooq.pl

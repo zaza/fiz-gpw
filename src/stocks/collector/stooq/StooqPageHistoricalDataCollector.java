@@ -16,6 +16,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -23,8 +24,6 @@ import org.w3c.dom.NodeList;
 import stocks.collector.XmlDataCollector;
 import stocks.data.Data;
 import stocks.data.StooqHistoricalData;
-
-import com.sun.org.apache.xpath.internal.XPathAPI;
 
 /**
  * Gather historical data from stooq.pl pages available online. 

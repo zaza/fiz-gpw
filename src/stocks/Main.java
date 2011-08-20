@@ -1,5 +1,6 @@
 package stocks;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -30,6 +31,10 @@ public class Main {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		Calendar c1 = Calendar.getInstance(); // today
 
+		File output = new File("output");
+		if (!output.exists())
+			output.mkdir();
+		
 		// === investors.pl
 		for (Fund fund : Fund.values()) {
 			if (proceed(args, fund.getStooq())) {
@@ -52,6 +57,12 @@ public class Main {
 
 				QuickStats qa = DataUtils.computeDiscount(matched);
 				System.out.println(qa.toString());
+				System.out.println("=> buy for: "
+						+ invfizPl.get(invfizPl.size() - 1).getValue()
+						* qa.getLowest() + ", is "
+						+ stooqData.get(0).getValue());
+				System.out.println("");
+
 				String file = "output/" + fund.getStooq() + "_" + sdf.format(c1.getTime());
 				toCsvFile(file + ".csv", matched);
 				Exporter.toXlsFile(file + ".xls", matched);

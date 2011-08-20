@@ -35,7 +35,7 @@ public class QuickStats {
 		StringBuilder sb = new StringBuilder("Quick stats:\n");
 		sb.append("Lowest:   " + lowest).append("\n");
 		sb.append("Median:   " + median).append("\n");
-		sb.append("Last:     " + last).append("\n");
+		sb.append("Last:     " + last);
 		return sb.toString();
 	}
 }

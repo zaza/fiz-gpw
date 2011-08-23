@@ -12,5 +12,4 @@ public enum StooqHistoricalDataInterval {
 	public String toString() {
 		return internal;
 	}
-
 }

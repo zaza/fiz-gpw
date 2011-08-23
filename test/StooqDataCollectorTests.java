@@ -40,7 +40,6 @@ public class StooqDataCollectorTests {
 				try {
 					return new FileInputStream(file);
 				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				return null;
@@ -64,15 +63,15 @@ public class StooqDataCollectorTests {
 
 	@Test 
 	public void testStooqPageHistoricalDataCollector_hasNextPage() throws FileNotFoundException, UnsupportedEncodingException {
-		File file = new File("test/data/stooq--invpefiz-1p--historia.html");
+		File file = new File("test/data/stooq-invpefiz-historia.html");
 		Document doc = XmlDataCollector.parseXmlFile(new FileInputStream(file));
 		assertFalse(StooqPageHistoricalDataCollector.hasNextPage(doc));
 		
-		file = new File("test/data/stooq--invpefiz-1--historia.html");
+		file = new File("test/data/stooq-invpefiz-1-historia.html");
 		doc = XmlDataCollector.parseXmlFile(new FileInputStream(file));
 		assertTrue(StooqPageHistoricalDataCollector.hasNextPage(doc));
 		
-		file = new File("test/data/stooq--invpefiz-2--historia.html");
+		file = new File("test/data/stooq-invpefiz-2-historia.html");
 		doc = XmlDataCollector.parseXmlFile(new FileInputStream(file));
 		assertFalse(StooqPageHistoricalDataCollector.hasNextPage(doc));
 	}
@@ -86,11 +85,10 @@ public class StooqDataCollectorTests {
 			@Override
 			protected Document[] getDocuments() throws UnsupportedEncodingException {
 				File file = new File(
-						"test/data/stooq--invpefiz-1p--historia.html");
+						"test/data/stooq-invpefiz-historia.html");
 				try {
 					return new Document[]{parseXmlFile(new FileInputStream(file))};
 				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				return null;
@@ -121,15 +119,14 @@ public class StooqDataCollectorTests {
 			@Override
 			protected Document[] getDocuments() throws UnsupportedEncodingException {
 				File file1 = new File(
-						"test/data/stooq--invpefiz-1--historia.html");
+						"test/data/stooq-invpefiz-1-historia.html");
 				File file2 = new File(
-						"test/data/stooq--invpefiz-2--historia.html");
+						"test/data/stooq-invpefiz-2-historia.html");
 				try {
 					return new Document[]{
 							parseXmlFile(new FileInputStream(file1)),
 							parseXmlFile(new FileInputStream(file2))};
 				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				return null;
@@ -157,11 +154,10 @@ public class StooqDataCollectorTests {
 			@Override
 			protected InputStream getInput() {
 				File file = new File(
-						"test/data/stooq--arkafrn12--wykres.html");
+						"test/data/stooq-arkafrn12-wykres.html");
 				try {
 					return new FileInputStream(file);
 				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				return null;
@@ -175,12 +171,11 @@ public class StooqDataCollectorTests {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Date d = df.parse("2011-01-18");
 		assertEquals(d, first.getDate());
-		// TODO:
-//		assertEquals(104f, first.getOpen(), 0);
+		assertEquals(104f, first.getOpen(), 0);
 		assertEquals(104f, first.getValue(), 0);
-//		assertEquals(104f, first.getAsk(), 0);
-//		assertEquals(102.5f, first.getBid(), 0);
-//		assertEquals(393, first.getVolume());
+		assertEquals(104f, first.getAsk(), 0);
+		assertEquals(102.5f, first.getBid(), 0);
+		assertEquals(393, first.getVolume());
 	}
 	
 	@Test
@@ -189,11 +184,10 @@ public class StooqDataCollectorTests {
 			@Override
 			protected InputStream getInput() {
 				File file = new File(
-						"test/data/stooq--rcsilaopen--wykres.html");
+						"test/data/stooq-rcsilaopen-wykres.html");
 				try {
 					return new FileInputStream(file);
 				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				return null;
@@ -207,11 +201,64 @@ public class StooqDataCollectorTests {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Date d = df.parse("2011-01-21");
 		assertEquals(d, first.getDate());
-		// TODO:
-//		assertEquals(104f, first.getOpen(), 0);
+		assertEquals(78.5f, first.getOpen(), 0);
 		assertEquals(77.8f, first.getValue(), 0);
-//		assertEquals(104f, first.getAsk(), 0);
-//		assertEquals(102.5f, first.getBid(), 0);
-//		assertEquals(393, first.getVolume());
+		assertEquals(78.6f, first.getAsk(), 0);
+		assertEquals(77.8f, first.getBid(), 0);
+		assertEquals(7790, first.getVolume());
+	}
+	
+	@Test
+	public void testStooqPageHistoricalData_sevenPages() throws Exception {
+		DataCollector invfizInvestorsPl = new StooqPageHistoricalDataCollector(
+				"rcsilaopen", new Date(System.currentTimeMillis()), new Date(System
+						.currentTimeMillis()),
+				StooqHistoricalDataInterval.Daily) {
+			@Override
+			protected Document[] getDocuments() throws UnsupportedEncodingException {
+				File file1 = new File(
+						"test/data/stooq-rcsilaopen-20100725-20110823-1.html");
+				File file2 = new File(
+						"test/data/stooq-rcsilaopen-20100725-20110823-2.html");
+				File file3 = new File(
+						"test/data/stooq-rcsilaopen-20100725-20110823-3.html");
+				File file4 = new File(
+						"test/data/stooq-rcsilaopen-20100725-20110823-4.html");
+				File file5 = new File(
+						"test/data/stooq-rcsilaopen-20100725-20110823-5.html");
+				File file6 = new File(
+						"test/data/stooq-rcsilaopen-20100725-20110823-6.html");
+				File file7 = new File(
+						"test/data/stooq-rcsilaopen-20100725-20110823-7.html");
+				
+				try {
+					return new Document[]{
+							parseXmlFile(new FileInputStream(file1)),
+							parseXmlFile(new FileInputStream(file2)),
+							parseXmlFile(new FileInputStream(file3)),
+							parseXmlFile(new FileInputStream(file4)),
+							parseXmlFile(new FileInputStream(file5)),
+							parseXmlFile(new FileInputStream(file6)),
+							parseXmlFile(new FileInputStream(file7))};
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+				return null;
+			};
+		};
+		List<Data> data = invfizInvestorsPl.collectData();
+		assertEquals(271, data.size());
+		
+		StooqHistoricalData first = (StooqHistoricalData) data.get(0);
+		assertEquals("rcsilaopen", first.getName());
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date d = df.parse("2010-7-27");
+		assertEquals(d, first.getDate());
+		assertEquals(56.34f, first.getOpen(), 0);
+		assertEquals(56.34f, first.getHigh(), 0);
+		assertEquals(54.64f, first.getLow(), 0);
+		assertEquals(54.64f, first.getClose(), 0);
+		assertEquals(54.64f, first.getValue(), 0);
+		assertEquals(150, first.getVolume());
 	}
 }

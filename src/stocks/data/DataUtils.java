@@ -101,4 +101,25 @@ public class DataUtils {
 			return floats.get(floats.size() / 2);
 		}
 	}
+	
+	public static int getVolume(String v) {
+		v = v.replaceAll(",", "");
+		char c = v.charAt(v.length()-1);
+		int m = 1;
+		switch (c) {
+			case 'k' :
+				m = 1000;
+				v = v.substring(0, v.length()-1);
+				break;
+			case 'm' :
+				m = 1000000;
+				v = v.substring(0, v.length()-1);
+				break;
+			default :
+				break;
+		}
+		float f = Float.parseFloat(v);
+		f = f * m;
+		return (int) f;
+	}
 }

@@ -22,6 +22,7 @@ import org.w3c.dom.NodeList;
 
 import stocks.collector.XmlDataCollector;
 import stocks.data.Data;
+import stocks.data.DataUtils;
 import stocks.data.StooqHistoricalData;
 
 import com.sun.org.apache.xpath.internal.XPathAPI;
@@ -65,7 +66,7 @@ public class StooqPageHistoricalDataCollector extends XmlDataCollector {
 						float high =  Float.parseFloat(childNodes.item(3).getFirstChild().getNodeValue());
 						float low =  Float.parseFloat(childNodes.item(4).getFirstChild().getNodeValue());
 						float close =  Float.parseFloat(childNodes.item(5).getFirstChild().getNodeValue());
-						int volume =  Integer.parseInt(childNodes.item(6).getFirstChild().getNodeValue());
+						int volume =  DataUtils.getVolume(childNodes.item(6).getFirstChild().getNodeValue());
 						StooqHistoricalData data = new StooqHistoricalData(d, open, high, low, close, volume, asset);
 						result.add(data);
 					}
@@ -74,10 +75,8 @@ public class StooqPageHistoricalDataCollector extends XmlDataCollector {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Collections.sort(result);

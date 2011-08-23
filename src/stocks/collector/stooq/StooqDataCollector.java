@@ -23,6 +23,7 @@ import org.w3c.dom.NodeList;
 
 import stocks.collector.XmlDataCollector;
 import stocks.data.Data;
+import stocks.data.DataUtils;
 import stocks.data.StooqCurrentData;
 
 import com.sun.org.apache.xpath.internal.XPathAPI;
@@ -58,19 +59,48 @@ public class StooqDataCollector extends XmlDataCollector {
 				Element element = (Element) nodes.item(0);
 				date = element.getFirstChild().getNodeValue();
 			}
-			
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 			Date d = df.parse(date); 
-			Data data = new StooqCurrentData(d, Float.parseFloat(value), asset);
+			
+			String open = null;
+			nodes = XPathAPI.selectNodeList(dom, "//span[@id='aq_"+asset+"_o']");
+			if (nodes != null && nodes.getLength() > 0) {
+				Element element = (Element) nodes.item(0);
+				open = element.getFirstChild().getNodeValue();
+			}
+
+			String bid = null;
+			nodes = XPathAPI.selectNodeList(dom, "//span[@id='aq_"+asset+"_b2']");
+			if (nodes != null && nodes.getLength() > 0) {
+				Element element = (Element) nodes.item(0);
+				bid = element.getFirstChild().getNodeValue();
+			}
+
+			String ask = null;
+			nodes = XPathAPI.selectNodeList(dom, "//span[@id='aq_"+asset+"_a2']");
+			if (nodes != null && nodes.getLength() > 0) {
+				Element element = (Element) nodes.item(0);
+				ask = element.getFirstChild().getNodeValue();
+			}
+
+			String volume = null;
+			nodes = XPathAPI.selectNodeList(dom, "//span[@id='aq_"+asset+"_v2']");
+			if (nodes != null && nodes.getLength() > 0) {
+				Element element = (Element) nodes.item(0);
+				volume = element.getFirstChild().getNodeValue();
+			}
+
+			StooqCurrentData data = new StooqCurrentData(d, Float.parseFloat(value), asset);
+			data.setOpen(Float.parseFloat(open));
+			data.setBid(Float.parseFloat(bid));
+			data.setAsk(Float.parseFloat(ask));
+			data.setVolume(DataUtils.getVolume(volume));
 			result.add(data);
 		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
@@ -84,5 +114,4 @@ public class StooqDataCollector extends XmlDataCollector {
 		httpclient.getConnectionManager().shutdown();
 		return new ByteArrayInputStream(responseBody.getBytes());
 	}
-
 }

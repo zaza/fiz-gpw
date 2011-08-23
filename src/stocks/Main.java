@@ -17,7 +17,6 @@ import stocks.collector.arka.ArkaDataCollector;
 import stocks.collector.investors.InvestorsPlDataCollector;
 import stocks.collector.investors.InvestorsPlDataCollector.Fund;
 import stocks.collector.stooq.StooqDataCollector;
-import stocks.collector.stooq.StooqHistoricalDataCollector;
 import stocks.collector.stooq.StooqHistoricalDataInterval;
 import stocks.collector.stooq.StooqPageHistoricalDataCollector;
 import stocks.data.Data;
@@ -77,7 +76,7 @@ public class Main {
 			Date start = allegroCoins.get(0).getDate();
 			Date today = new Date(System.currentTimeMillis());
 			Date end = DateUtils.truncate(today, Calendar.DAY_OF_MONTH);
-			DataCollector rcsilaopenHistory = new StooqHistoricalDataCollector("rcsilaopen", start, end, StooqHistoricalDataInterval.Daily);
+			DataCollector rcsilaopenHistory = new StooqPageHistoricalDataCollector("rcsilaopen", start, end, StooqHistoricalDataInterval.Daily);
 			List<Data> stooqHistData = rcsilaopenHistory.collectData();
 			// add latest
 			DataCollector latestFromStooq = new StooqDataCollector("rcsilaopen");
@@ -100,7 +99,7 @@ public class Main {
 			Date start = arkafrn.get(0).getDate();
 			Date today = new Date(System.currentTimeMillis());
 			Date end = DateUtils.truncate(today, Calendar.DAY_OF_MONTH);
-			DataCollector arkafrn12History = new StooqHistoricalDataCollector("arkafrn12", start, end, StooqHistoricalDataInterval.Daily);
+			DataCollector arkafrn12History = new StooqPageHistoricalDataCollector("arkafrn12", start, end, StooqHistoricalDataInterval.Daily);
 			List<Data> stooqHistData = arkafrn12History.collectData();
 			// add latest
 			StooqDataCollector latestFromStooq = new StooqDataCollector("arkafrn12");

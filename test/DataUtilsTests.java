@@ -210,4 +210,12 @@ public class DataUtilsTests {
 		assertEquals(0.9f, result.getMedianLowerThan1(), 0);
 		assertEquals(1.1f, result.getLast(), 0);
 	}
+	
+	@Test
+	public void testGetVolume() {
+		assertEquals(1, DataUtils.getVolume("1"));
+		assertEquals(1100, DataUtils.getVolume("1,100"));
+		assertEquals(7790, DataUtils.getVolume("7.79k"));
+		assertEquals(1200000, DataUtils.getVolume("1.2m"));
+	}
 }

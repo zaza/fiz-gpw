@@ -12,6 +12,7 @@ import java.util.Locale;
 
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -20,6 +21,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import stocks.collector.DataCollector;
 import stocks.collector.XmlDataCollector;
 import stocks.data.Data;
 import stocks.data.DataUtils;
@@ -33,10 +35,10 @@ import com.sun.org.apache.xpath.internal.XPathAPI;
  */
 public class StooqPageHistoricalDataCollector extends XmlDataCollector {
 	
-	private String asset;
-	private Date start;
-	private Date end;
-	private StooqHistoricalDataInterval interval;
+	final private String asset;
+	final private Date start;
+	final private Date end;
+	final private StooqHistoricalDataInterval interval;
 
 	public StooqPageHistoricalDataCollector(String asset, Date start, Date end,
 			StooqHistoricalDataInterval interval) {
@@ -80,9 +82,26 @@ public class StooqPageHistoricalDataCollector extends XmlDataCollector {
 			e.printStackTrace();
 		}
 		Collections.sort(result);
+		checkFirst(result);
 		return result;
 	}
 	
+	protected void checkFirst(List<Data> result) {
+		StooqHistoricalData first = (StooqHistoricalData) result.get(0);
+		if (first.getDate().after(start)) {
+			DataCollector collector = new StooqPageHistoricalDataCollector(
+					asset, DataUtils.weekBefore(start), start,
+					StooqHistoricalDataInterval.Daily) {
+				protected void checkFirst(java.util.List<Data> result) {
+					// do nothing
+				};
+			};
+			List<Data> extraData = collector.collectData();
+			Data toAdd = extraData.get(extraData.size()-1);
+			result.add(0, toAdd);
+		}
+	}
+
 	protected Document[] getDocuments() throws IOException {
 		List<Document> documents = new ArrayList<Document>();
 		
@@ -115,7 +134,6 @@ public class StooqPageHistoricalDataCollector extends XmlDataCollector {
 			if (nodes.getLength() == 2)
 				return true;
 		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;

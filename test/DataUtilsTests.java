@@ -2,10 +2,12 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.junit.Test;
 
 import stocks.data.Data;
@@ -217,5 +219,28 @@ public class DataUtilsTests {
 		assertEquals(1100, DataUtils.getVolume("1,100"));
 		assertEquals(7790, DataUtils.getVolume("7.79k"));
 		assertEquals(1200000, DataUtils.getVolume("1.2m"));
+	}
+	
+	@Test public void testWeekBefore() {
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, 2000);
+		cal.set(Calendar.MONTH, 2);
+		cal.set(Calendar.DAY_OF_MONTH, 9);
+		Date result = DataUtils.weekBefore(cal.getTime());
+		cal.setTime(result);
+		assertEquals(2, cal.get(Calendar.DAY_OF_MONTH));
+
+		cal.set(Calendar.YEAR, 2000);
+		cal.set(Calendar.MONTH, 1);
+		cal.set(Calendar.DAY_OF_MONTH, 7);
+		result = DataUtils.weekBefore(cal.getTime());
+		cal.setTime(result);
+		assertEquals(0, cal.get(Calendar.MONTH));
+		assertEquals(31, cal.get(Calendar.DAY_OF_MONTH));
+
+		result = DataUtils.weekBefore(new Date(2000, 0, 1));
+		assertEquals(1999, result.getYear());
+		assertEquals(11, result.getMonth());
+		assertEquals(25, result.getDate());
 	}
 }

@@ -9,9 +9,11 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -210,9 +212,12 @@ public class StooqDataCollectorTests {
 	
 	@Test
 	public void testStooqPageHistoricalData_sevenPages() throws Exception {
-		DataCollector invfizInvestorsPl = new StooqPageHistoricalDataCollector(
-				"rcsilaopen", new Date(System.currentTimeMillis()), new Date(System
-						.currentTimeMillis()),
+		Calendar start = Calendar.getInstance();
+		start.set(2010, 6, 25);
+		Calendar end = Calendar.getInstance();
+		end.set(2011, 7, 23);
+		DataCollector rcsilaopenStooq = new StooqPageHistoricalDataCollector(
+				"rcsilaopen", start.getTime(), end.getTime(),
 				StooqHistoricalDataInterval.Daily) {
 			@Override
 			protected Document[] getDocuments() throws UnsupportedEncodingException {
@@ -246,27 +251,27 @@ public class StooqDataCollectorTests {
 				return null;
 			};
 		};
-		List<Data> data = invfizInvestorsPl.collectData();
-		assertEquals(271, data.size());
+		List<Data> data = rcsilaopenStooq.collectData();
+		assertEquals(272, data.size());
 		
 		StooqHistoricalData first = (StooqHistoricalData) data.get(0);
 		assertEquals("rcsilaopen", first.getName());
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		Date start = df.parse("2010-7-25");
-//		Date d = df.parse("2010-7-27");
-		assertFalse(first.getDate().after(start));
-//		assertEquals(d, first.getDate());
-		assertEquals(56.34f, first.getOpen(), 0);
-		assertEquals(56.34f, first.getHigh(), 0);
-		assertEquals(54.64f, first.getLow(), 0);
-		assertEquals(54.64f, first.getClose(), 0);
-		assertEquals(54.64f, first.getValue(), 0);
-		assertEquals(150, first.getVolume());
+		assertFalse(first.getDate().after(start.getTime()));
+		Calendar d = Calendar.getInstance();
+		d.set(2010, 6, 23);
+		d = DateUtils.truncate(d, Calendar.DAY_OF_MONTH);
+		assertEquals(d.getTime(), first.getDate());
+		assertEquals(57.17f, first.getOpen(), 0);
+		assertEquals(57.26f, first.getHigh(), 0);
+		assertEquals(57.17f, first.getLow(), 0);
+		assertEquals(57.26f, first.getClose(), 0);
+		assertEquals(57.26f, first.getValue(), 0);
+		assertEquals(55, first.getVolume());
 	}
 	
 	@Test
 	public void testRcsilaiopenStooqSunday() throws Exception {
-		DataCollector arkafrnStooq = new StooqDataCollector("rcsilaopen"){
+		DataCollector rcsilaopenStooq = new StooqDataCollector("rcsilaopen"){
 			@Override
 			protected InputStream getInput() {
 				File file = new File(
@@ -279,7 +284,7 @@ public class StooqDataCollectorTests {
 				return null;
 			};
 		};
-		List<Data> data = arkafrnStooq.collectData();
+		List<Data> data = rcsilaopenStooq.collectData();
 		assertEquals(1, data.size());
 		
 		StooqCurrentData first = (StooqCurrentData) data.get(0);

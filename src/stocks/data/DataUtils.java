@@ -1,5 +1,6 @@
 package stocks.data;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -121,5 +122,12 @@ public class DataUtils {
 		float f = Float.parseFloat(v);
 		f = f * m;
 		return (int) f;
+	}
+	
+	public static Date weekBefore(final Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.DAY_OF_YEAR, -7);
+		return cal.getTime();
 	}
 }

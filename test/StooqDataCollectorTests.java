@@ -252,13 +252,41 @@ public class StooqDataCollectorTests {
 		StooqHistoricalData first = (StooqHistoricalData) data.get(0);
 		assertEquals("rcsilaopen", first.getName());
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		Date d = df.parse("2010-7-27");
-		assertEquals(d, first.getDate());
+		Date start = df.parse("2010-7-25");
+//		Date d = df.parse("2010-7-27");
+		assertFalse(first.getDate().after(start));
+//		assertEquals(d, first.getDate());
 		assertEquals(56.34f, first.getOpen(), 0);
 		assertEquals(56.34f, first.getHigh(), 0);
 		assertEquals(54.64f, first.getLow(), 0);
 		assertEquals(54.64f, first.getClose(), 0);
 		assertEquals(54.64f, first.getValue(), 0);
 		assertEquals(150, first.getVolume());
+	}
+	
+	@Test
+	public void testRcsilaiopenStooqSunday() throws Exception {
+		DataCollector arkafrnStooq = new StooqDataCollector("rcsilaopen"){
+			@Override
+			protected InputStream getInput() {
+				File file = new File(
+						"test/data/stooq-rcsilaopen-20100725-sunday.html");
+				try {
+					return new FileInputStream(file);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+				return null;
+			};
+		};
+		List<Data> data = arkafrnStooq.collectData();
+		assertEquals(1, data.size());
+		
+		StooqCurrentData first = (StooqCurrentData) data.get(0);
+		assertEquals("rcsilaopen", first.getName());
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date d = df.parse("2010-07-25");
+		assertEquals(d, first.getDate());
+		assertTrue(first.isNoData());
 	}
 }

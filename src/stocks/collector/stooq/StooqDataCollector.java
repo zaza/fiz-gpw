@@ -17,8 +17,10 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import stocks.collector.XmlDataCollector;
@@ -48,9 +50,13 @@ public class StooqDataCollector extends XmlDataCollector {
 			Document dom = parseXmlFile(inputStream);
 
 			String value = null;
-			NodeList nodes = XPathAPI.selectNodeList(dom, "//span[@id='aq_" + asset + "_c2|3']");
+			NodeList nodes = XPathAPI.selectNodeList(dom, "//span[@id='aq_" + asset + "_c2|3' and @style='font-weight:bold']");
 			if (nodes != null && nodes.getLength() > 0) {
 				Element element = (Element) nodes.item(0);
+				if (!element.hasChildNodes()) {
+					result.add(new StooqCurrentData(findDateForNoData(dom), -1, asset));
+					return result;
+				}
 				value = element.getFirstChild().getNodeValue();
 			}
 			String date = null;
@@ -113,5 +119,16 @@ public class StooqDataCollector extends XmlDataCollector {
 		String responseBody = httpclient.execute(httpget, responseHandler);
 		httpclient.getConnectionManager().shutdown();
 		return new ByteArrayInputStream(responseBody.getBytes());
+	}
+	
+	private Date findDateForNoData(Document dom) throws TransformerException, DOMException, ParseException {
+		NodeList nodes = XPathAPI.selectNodeList(dom, "//form[@name='q']");
+		if (nodes != null && nodes.getLength() > 0) {
+			Element element = (Element) nodes.item(0);
+			Node v = element.getFirstChild().getAttributes().getNamedItem("value");
+			DateFormat df = new SimpleDateFormat("yyyyMMdd");
+			return df.parse(v.getNodeValue()); 
+		}
+		throw new IllegalArgumentException("couldn't find date for no data");
 	}
 }

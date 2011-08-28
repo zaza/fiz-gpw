@@ -44,4 +44,7 @@ public class StooqCurrentData extends Data {
 		return bid;
 	}
 
+	public boolean isNoData() {
+		return getValue() == -1;
+	}
 }

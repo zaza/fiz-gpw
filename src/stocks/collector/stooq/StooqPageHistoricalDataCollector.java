@@ -12,7 +12,6 @@ import java.util.Locale;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -49,7 +48,7 @@ public class StooqPageHistoricalDataCollector extends XmlDataCollector {
 	}
 
 	@Override
-	public List<Data> collectData() {
+	public List<Data> collectData(boolean includeStart) {
 		List<Data> result = new ArrayList<Data>();
 		try {
 			Document[] documents = getDocuments();
@@ -82,22 +81,19 @@ public class StooqPageHistoricalDataCollector extends XmlDataCollector {
 			e.printStackTrace();
 		}
 		Collections.sort(result);
-		checkFirst(result);
+		if (includeStart)
+			checkFirst(result);
 		return result;
 	}
 	
-	protected void checkFirst(List<Data> result) {
+	private void checkFirst(List<Data> result) {
 		StooqHistoricalData first = (StooqHistoricalData) result.get(0);
 		if (first.getDate().after(start)) {
 			DataCollector collector = new StooqPageHistoricalDataCollector(
 					asset, DataUtils.weekBefore(start), start,
-					StooqHistoricalDataInterval.Daily) {
-				protected void checkFirst(java.util.List<Data> result) {
-					// do nothing
-				};
-			};
-			List<Data> extraData = collector.collectData();
-			Data toAdd = extraData.get(extraData.size()-1);
+					StooqHistoricalDataInterval.Daily);
+			List<Data> extraData = collector.collectData(false);
+			Data toAdd = extraData.get(extraData.size() - 1);
 			result.add(0, toAdd);
 		}
 	}

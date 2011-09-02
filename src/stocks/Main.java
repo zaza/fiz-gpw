@@ -80,7 +80,7 @@ public class Main {
 			List<Data> stooqHistData = rcsilaopenHistory.collectData();
 			// add latest
 			DataCollector latestFromStooq = new StooqDataCollector("rcsilaopen");
-			List<Data> stooqData = latestFromStooq.collectData();
+			List<Data> stooqData = latestFromStooq.collectData(true);
 			stooqHistData.add(stooqData.get(0));
 
 			List<Data[]> matched = DataUtils.matchByDate(stooqHistData, allegroCoins);

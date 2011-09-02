@@ -43,7 +43,9 @@ public class StooqDataCollector extends XmlDataCollector {
 	}
 
 	@Override
-	public List<Data> collectData() {
+	public List<Data> collectData(boolean includeStart) {
+		if (includeStart)
+			throw new IllegalArgumentException("not implemented yet");
 		List<Data> result = new ArrayList<Data>();
 		try {
 			InputStream inputStream = getInput();

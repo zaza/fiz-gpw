@@ -2,9 +2,11 @@ package stocks.excel;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
@@ -18,6 +20,7 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 import stocks.data.Data;
+import stocks.data.DataUtils;
 import stocks.data.StooqHistoricalData;
 
 public class Exporter {
@@ -118,7 +121,9 @@ public class Exporter {
 
 	private void addDateTime(WritableSheet s, int c, int r,
 			Date date) throws RowsExceededException, WriteException {
-		DateTime dateTime = new DateTime(c, r, date);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		DateTime dateTime = new DateTime(c, r, DataUtils.adjustTimezone(cal).getTime());
 		s.addCell(dateTime);
 	}
 	

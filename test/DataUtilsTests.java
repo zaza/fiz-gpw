@@ -1,11 +1,15 @@
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.junit.Test;
@@ -242,5 +246,21 @@ public class DataUtilsTests {
 		assertEquals(1999, result.getYear());
 		assertEquals(11, result.getMonth());
 		assertEquals(25, result.getDate());
+	}
+	
+	@Test
+	public void testAdjustTimezone() throws ParseException {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date d = df.parse("2011-10-01");
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(d);
+		Calendar gmtCal = DataUtils.adjustTimezone(cal);
+		// Calendar gmtCal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+		// gmtCal.setTime(d);
+
+		assertEquals(2011, gmtCal.get(Calendar.YEAR));
+		assertEquals(10, gmtCal.get(Calendar.MONTH) + 1);
+		assertEquals(1, gmtCal.get(Calendar.DAY_OF_MONTH));
 	}
 }

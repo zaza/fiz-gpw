@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.commons.lang.time.DateUtils;
 
@@ -129,5 +130,23 @@ public class DataUtils {
 		cal.setTime(date);
 		cal.add(Calendar.DAY_OF_YEAR, -7);
 		return cal.getTime();
+	}
+
+	public static Calendar adjustTimezone(Calendar cal) {
+		Date date = cal.getTime();
+		TimeZone tz = cal.getTimeZone();
+
+		// returns the number of ms since January 1, 1970, 00:00:00 GMT
+		long msFromEpochGmt = date.getTime();
+
+		// gives you the current offset in ms from GMT at the current date
+		int offsetFromUTC = tz.getOffset(msFromEpochGmt);
+
+		// creates a new calendar in GMT, set to this date and add the offset
+		Calendar gmtCal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+		gmtCal.setTime(date);
+		gmtCal.add(Calendar.MILLISECOND, offsetFromUTC);
+
+		return gmtCal;
 	}
 }

@@ -14,6 +14,7 @@ import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.write.DateTime;
 import jxl.write.Formula;
+import jxl.write.Label;
 import jxl.write.Number;
 import jxl.write.NumberFormats;
 import jxl.write.WritableCellFormat;
@@ -21,6 +22,7 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
+import stocks.data.AllegroData;
 import stocks.data.Data;
 import stocks.data.DataUtils;
 import stocks.data.StooqHistoricalData;
@@ -45,11 +47,11 @@ public class Exporter {
 
 	public static void toXlsFile(String filePath, List<Data[]> matched)
 			throws IOException {
-		Exporter test = new Exporter();
-		test.setOutputFile(filePath);
-		test.setData(matched);
+		Exporter exporter = new Exporter();
+		exporter.setOutputFile(filePath);
+		exporter.setData(matched);
 		try {
-			test.write();
+			exporter.write();
 		} catch (WriteException e) {
 			System.err.println("Cannot write: " + filePath);
 			e.printStackTrace();
@@ -74,19 +76,30 @@ public class Exporter {
 	private void createContent(WritableSheet sheet) throws WriteException,
 			RowsExceededException {
 		
+		boolean low = false;
+		
 		final String ratio = "C%d/B%d";
 		final String ratioLow = "E%d/B%d";
 		for (int i = 0; i < datas.size(); i++) {
 			Data[] d = datas.get(i);
 			addDateTime(sheet, 0 /* A */, i, d[0].getDate());
-			addNumber(sheet, 1 /* B */, i, d[0].getValue());
+			// benchmark
+			addFloat(sheet, 1 /* B */, i, d[0].getValue());
 			if (d[1] != null) {
-				addNumber(sheet, 2 /* C */, i, d[1].getValue());
+				addFloat(sheet, 2 /* C */, i, d[1].getValue());
 				addFormula(sheet, 3 /* D */, i, String.format(ratio, i + 1, i + 1));
 				if (d[1] instanceof StooqHistoricalData) {
+					low = true;
 					StooqHistoricalData shd = (StooqHistoricalData) d[1];
-					addNumber(sheet, 4 /* E */, i, shd.getLow());
+					addFloat(sheet, 4 /* E */, i, shd.getLow());
 					addFormula(sheet, 5 /* F */, i, String.format(ratioLow, i + 1, i + 1));
+				} else if (d[1] instanceof AllegroData) {
+					low = false;
+					AllegroData ad = (AllegroData) d[1];
+					if (ad.getId() > 0) {
+						addInteger(sheet, 4 /* E */, i, ad.getId());
+						addLabel(sheet, 5 /* F */, i, ad.getName());
+					}
 				}
 			}
 		}
@@ -102,15 +115,17 @@ public class Exporter {
 		f = new Formula(3 /* D */, datas.size(), sb.toString());
 		sheet.addCell(f);
 
-		sb.setLength(0);
-		sb.append("B").append(datas.size()).append("*F").append(datas.size() + 1);
-		f = new Formula(4 /* E */, datas.size(), sb.toString());
-		sheet.addCell(f);
-		
-		sb.setLength(0);
-		sb.append("MIN(F1:F").append(datas.size()).append(")");
-		f = new Formula(5 /* F */, datas.size(), sb.toString());
-		sheet.addCell(f);
+		if (low) {
+			sb.setLength(0);
+			sb.append("B").append(datas.size()).append("*F").append(datas.size() + 1);
+			f = new Formula(4 /* E */, datas.size(), sb.toString());
+			sheet.addCell(f);
+
+			sb.setLength(0);
+			sb.append("MIN(F1:F").append(datas.size()).append(")");
+			f = new Formula(5 /* F */, datas.size(), sb.toString());
+			sheet.addCell(f);
+		}
 		
 		// MEDIAN
 		sb.setLength(0);
@@ -123,15 +138,17 @@ public class Exporter {
 		f = new Formula(3 /* D */, datas.size()+1, sb.toString());
 		sheet.addCell(f);
 
-		sb.setLength(0);
-		sb.append("B").append(datas.size()).append("*F").append(datas.size() + 2);
-		f = new Formula(4 /* E */, datas.size()+1, sb.toString());
-		sheet.addCell(f);
-		
-		sb.setLength(0);
-		sb.append("MEDIAN(F1:F").append(datas.size()).append(")");
-		f = new Formula(5 /* F */, datas.size()+1, sb.toString());
-		sheet.addCell(f);
+		if (low) {
+			sb.setLength(0);
+			sb.append("B").append(datas.size()).append("*F").append(datas.size() + 2);
+			f = new Formula(4 /* E */, datas.size()+1, sb.toString());
+			sheet.addCell(f);
+
+			sb.setLength(0);
+			sb.append("MEDIAN(F1:F").append(datas.size()).append(")");
+			f = new Formula(5 /* F */, datas.size()+1, sb.toString());
+			sheet.addCell(f);
+		}
 	}
 
 	private void addDateTime(WritableSheet s, int c, int r,
@@ -142,9 +159,16 @@ public class Exporter {
 		s.addCell(dateTime);
 	}
 	
-	private void addNumber(WritableSheet s, int c, int r,
+	private void addFloat(WritableSheet s, int c, int r,
 			float f) throws WriteException, RowsExceededException {
 		WritableCellFormat floatFormat = new WritableCellFormat (NumberFormats.FLOAT); 
+		Number number = new Number(c, r, f, floatFormat);
+		s.addCell(number);
+	}
+	
+	private void addInteger(WritableSheet s, int c, int r,
+			float f) throws WriteException, RowsExceededException {
+		WritableCellFormat floatFormat = new WritableCellFormat (NumberFormats.INTEGER); 
 		Number number = new Number(c, r, f, floatFormat);
 		s.addCell(number);
 	}
@@ -153,6 +177,12 @@ public class Exporter {
 			String f) throws WriteException, RowsExceededException {
 		Formula formula = new Formula(c, r, f);
 		s.addCell(formula);
+	}
+	
+	private void addLabel(WritableSheet s, int c, int r,
+			String l) throws WriteException, RowsExceededException {
+		Label label = new Label(c, r, l);
+		s.addCell(label);
 	}
 
 	public void setOutputFile(String inputFile) {

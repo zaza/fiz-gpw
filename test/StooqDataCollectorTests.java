@@ -200,9 +200,11 @@ public class StooqDataCollectorTests {
 		
 		StooqCurrentData first = (StooqCurrentData) data.get(0);
 		assertEquals("rcsilaopen", first.getName());
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		Date d = df.parse("2011-01-21");
-		assertEquals(d, first.getDate());
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(first.getDate());
+		assertEquals(2011, cal.get(Calendar.YEAR));
+		assertEquals(0, cal.get(Calendar.MONTH));
+		assertEquals(21, cal.get(Calendar.DAY_OF_MONTH));
 		assertEquals(78.5f, first.getOpen(), 0);
 		assertEquals(77.8f, first.getValue(), 0);
 		assertEquals(78.6f, first.getAsk(), 0);
@@ -251,7 +253,7 @@ public class StooqDataCollectorTests {
 				return null;
 			};
 		};
-		List<Data> data = rcsilaopenStooq.collectData();
+		List<Data> data = rcsilaopenStooq.collectData(true);
 		assertEquals(272, data.size());
 		
 		StooqHistoricalData first = (StooqHistoricalData) data.get(0);

@@ -85,16 +85,25 @@ public class StooqPageHistoricalDataCollector extends XmlDataCollector {
 			checkFirst(result);
 		return result;
 	}
-	
-	private void checkFirst(List<Data> result) {
-		StooqHistoricalData first = (StooqHistoricalData) result.get(0);
+
+	/**
+	 * Checks if the collection contains an entry for the start date. If not, it
+	 * fetches data from the week before the date and adds data from a day which
+	 * is closest to it.
+	 *
+	 * @param data
+	 *            the list of Data objects to check
+	 */
+	private void checkFirst(List<Data> data) {
+		StooqHistoricalData first = (StooqHistoricalData) data.get(0);
 		if (first.getDate().after(start)) {
+			// collect data from the week before the start date
 			DataCollector collector = new StooqPageHistoricalDataCollector(
 					asset, DataUtils.weekBefore(start), start,
 					StooqHistoricalDataInterval.Daily);
-			List<Data> extraData = collector.collectData(false);
-			Data toAdd = extraData.get(extraData.size() - 1);
-			result.add(0, toAdd);
+			List<Data> lastWeekData = collector.collectData(false);
+			Data toAdd = lastWeekData.get(lastWeekData.size() - 1);
+			data.add(0, toAdd);
 		}
 	}
 

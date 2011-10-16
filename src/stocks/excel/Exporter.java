@@ -1,12 +1,14 @@
 package stocks.excel;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
@@ -27,6 +29,19 @@ public class Exporter {
 
 	private String inputFile;
 	private List<Data[]> datas;
+
+	public static void toCsvFile(String filePath, List<Data[]> matched) throws IOException {
+		BufferedWriter out = new BufferedWriter(new FileWriter(filePath));
+		for (Iterator<Data[]> iterator = matched.iterator(); iterator.hasNext();) {
+			Data[] datas = (Data[]) iterator.next();
+			String value1 = datas[0].toCsvString();
+			String value2 = datas[1] != null ? datas[1].toCsvString() : "";
+			out.write(datas[0].getFormattedDate() + ";" + value1 + ";"	+ value2);
+			if (iterator.hasNext())
+				out.newLine();
+		}
+		out.close();
+	}
 
 	public static void toXlsFile(String filePath, List<Data[]> matched)
 			throws IOException {

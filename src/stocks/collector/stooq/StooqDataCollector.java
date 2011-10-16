@@ -42,10 +42,15 @@ public class StooqDataCollector extends XmlDataCollector {
 		this.asset = asset;
 	}
 
+	/**
+	 * Collects latest data for the given asset from stooq.pl. The returned
+	 * collection contains a single item. The <code>includeStart</code> is
+	 * ignored as the input from {@link #getInput()} fetches a page with a data.
+	 * The date, however, cannot be determined before parsing takes place. It
+	 * can be today or it can be a year old.
+	 */
 	@Override
 	public List<Data> collectData(boolean includeStart) {
-		if (includeStart)
-			throw new IllegalArgumentException("not implemented yet");
 		List<Data> result = new ArrayList<Data>();
 		try {
 			InputStream inputStream = getInput();

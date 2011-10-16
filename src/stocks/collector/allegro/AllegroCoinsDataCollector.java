@@ -23,7 +23,7 @@ public class AllegroCoinsDataCollector extends DataCollector {
 			throw new IllegalArgumentException("not implemented yet");
 		List<Data> result = new ArrayList<Data>();
 		try {
-			// TODO: run LostAuctionsImporter
+			// TODO #7: run LostAuctionsImporter
 			String[] lines = IOUtils.readLines(new File("../webapi-client/output/merged-raw.csv"));
 			for (String line : lines) {
 				String[] split = line.split(";");
